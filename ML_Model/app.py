@@ -57,28 +57,41 @@ def predict_from_image(image):
 
 
 # Define the /predict API endpoint
+
+@app.route('/')
+def home():
+    return "Server is running!"
+
 @app.route('/predict', methods=['POST'])
 def handle_predict():
     data = request.get_json()
+    
+    # <-- ADD THIS LINE
+    print("Received data:", data)
+    
     if 'image' not in data:
         return jsonify({'error': 'No image data found'}), 400
 
-    # Decode the base64 image sent from React
-    image_data = data['image'].split(',')[1]
-    image_bytes = io.BytesIO(base64.b64decode(image_data))
-    
-    # Open the image with Pillow and convert to an OpenCV-compatible format (numpy array)
-    pil_image = Image.open(image_bytes).convert('RGB')
-    opencv_image = np.array(pil_image)
-    # Convert RGB to BGR for OpenCV
-    opencv_image = opencv_image[:, :, ::-1].copy()
+    # Remove data URI prefix if present
+    image_data = data['image']
+    if ',' in image_data:
+        image_data = image_data.split(',')[1]
 
-    # Get the prediction
+    # Fix padding
+    missing_padding = len(image_data) % 4
+    if missing_padding != 0:
+        image_data += '=' * (4 - missing_padding)
+
+    try:
+        image_bytes = io.BytesIO(base64.b64decode(image_data))
+        pil_image = Image.open(image_bytes).convert('RGB')
+    except Exception as e:
+        return jsonify({'error': f'Cannot decode image: {str(e)}'}), 400
+
+    opencv_image = np.array(pil_image)[:, :, ::-1].copy()
     predicted_character = predict_from_image(opencv_image)
 
-    # Return the prediction as JSON
     return jsonify({'prediction': predicted_character})
 
-# Run the server
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5001)

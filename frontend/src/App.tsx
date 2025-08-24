@@ -27,6 +27,8 @@ import ReadingEnglishLevel1 from "./components/readingEnglish/level1";
 import ReadingEnglishLevel2 from "./components/readingEnglish/level2";
 import ReadingEnglishLevel3 from "./components/readingEnglish/level3";
 import ReadingEnglishLevel4 from "./components/readingEnglish/level4"; 
+import ReadingEnglishLevel5 from './components/readingEnglish/level5';
+
 // Hindi Writing
 import WritingHindiLevel1 from "./components/writingHindi/level1";
 import WritingHindiLevel2 from "./components/writingHindi/level2";
@@ -80,6 +82,7 @@ const App = () => (
             <Route path="/readingEnglish/level2" element={<ReadingEnglishLevel2 />} />
             <Route path="/readingEnglish/level3" element={<ReadingEnglishLevel3 />} />
             <Route path="/readingEnglish/level4" element={<ReadingEnglishLevel4 />} /> 
+            <Route path="/readingEnglish/level5" element={<ReadingEnglishLevel5 />} /> 
 
             <Route path="/readingHindi/level1" element={<ReadingHindiLevel1 />} />
             <Route path="/readingHindi/level2" element={<ReadingHindiLevel2 />} />

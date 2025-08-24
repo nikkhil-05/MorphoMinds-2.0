@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 declare global {
   interface Window {
@@ -8,146 +8,134 @@ declare global {
   }
 }
 
-const ReadingLevel2 = () => {
-  const [word, setWord] = useState('');
+const ReadingLevel3 = () => {
+  const [word, setWord] = useState("");
   const [isListening, setIsListening] = useState(false);
-  const [result, setResult] = useState('');
+  const [result, setResult] = useState("");
 
+  // ✅ Fetch word from backend
   const fetchWord = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/get-word?level=2');
+      const res = await axios.get("http://localhost:5000/get-word?level=3");
       setWord(res.data.word);
-      setResult('');
+      setResult("");
     } catch (err) {
-      console.error('Error fetching word:', err);
+      console.error("Error fetching word:", err);
+      setResult("❌ Failed to fetch word. Please try again.");
     }
   };
 
   const handleSpeech = () => {
-    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-    recognition.lang = 'en-US';
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      alert("Speech Recognition not supported in this browser.");
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = "en-US";
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
+    recognition.continuous = false; // ✅ stop after one result
 
     setIsListening(true);
-    setResult('🎤 Listening...');
+    setResult("🎤 Listening...");
 
     recognition.start();
 
-    const timeoutId = setTimeout(() => {
-      recognition.stop();
-      setResult('⚠️ Timeout. Please try again.');
-      setIsListening(false);
-    }, 7000);
+    recognition.onresult = (event: any) => {
+      const spoken = event.results[0][0].transcript.toLowerCase().trim();
+      console.log("User said:", spoken);
 
-    recognition.onresult = async (event: any) => {
-      clearTimeout(timeoutId);
-      const spoken = event.results[0][0].transcript.toLowerCase();
-      console.log('User said:', spoken);
-
-      try {
-        const res = await axios.post('http://localhost:5000/check-word', {
-          expected_word: word,
-          spoken_word: spoken,
-        });
-        setResult(res.data.result);
-      } catch (err) {
-        console.error('Error checking word:', err);
-        setResult('❌ Error processing speech.');
+      if (spoken === word.toLowerCase()) {
+        setResult("✅ Correct! You said the word.");
+      } else {
+        setResult(`❌ Incorrect. You said "${spoken}". Try again.`);
       }
 
+      recognition.stop();
       setIsListening(false);
+    };
+
+    recognition.onspeechend = () => {
+      recognition.stop();
+      setIsListening(false);
+
+      // 👇 If no result captured, give feedback
+      setResult((prev) => {
+        if (!prev || prev.includes("Listening")) {
+          return "❌ No speech detected. Please try again.";
+        }
+        return prev;
+      });
     };
 
     recognition.onerror = (e: any) => {
-      clearTimeout(timeoutId);
-      console.error('Speech error:', e);
-      setResult('❌ Speech recognition failed.');
+      console.error("Speech error:", e);
+      setResult("❌ Speech recognition failed. Please try again.");
       setIsListening(false);
-    };
-
-    recognition.onend = () => {
-      if (isListening) {
-        setResult('⚠️ No speech detected. Try again.');
-        setIsListening(false);
-      }
     };
   };
 
-  const handleTextToSpeech = async () => {
-    try {
-      const res = await axios.post(
-        'https://api.magicapi.dev/api/v1/sarvam/ai-models/text-to-speech',
-        {
-          
-          inputs: [word],
-          target_language_code: 'hi-IN',
-          speaker: 'meera',
-          pitch: 0,
-          pace: 1,
-          loudness: 1,
-          speech_sample_rate: 16000,
-          enable_preprocessing: true,
-          model: 'bulbul:v1',
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'x-magicapi-key': 'cm9dcve2v0009l2047m9kothl', // 🔑 Replace this with your actual key
-            accept: 'application/json',
-          },
-          responseType: 'blob', // to get audio file
-        }
-      );
-
-      const audioBlob = new Blob([res.data], { type: 'audio/mpeg' });
-      const audioUrl = URL.createObjectURL(audioBlob);
-      const audio = new Audio(audioUrl);
-      audio.play();
-    } catch (err) {
-      console.error('Error with Text-to-Speech:', err);
-      setResult('❌ Error generating speech.');
-    }
+  // ✅ Built-in Text-to-Speech
+  const handleTextToSpeech = () => {
+    if (!word) return;
+    const utterance = new SpeechSynthesisUtterance(word);
+    utterance.lang = "en-US";
+    utterance.pitch = 1;
+    utterance.rate = 1;
+    utterance.volume = 1;
+    window.speechSynthesis.speak(utterance);
   };
 
   useEffect(() => {
-    fetchWord();
+    fetchWord(); // Fetch initial word when component loads
   }, []);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-yellow-50 to-white p-6">
-      <h1 className="text-3xl font-bold text-yellow-600 mb-6">Reading Practice - Level 2</h1>
+      <h1 className="text-3xl font-bold text-yellow-600 mb-6">
+        Reading Practice - Level 3
+      </h1>
 
       <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md text-center">
         <p className="text-lg text-gray-700 mb-4">🔠 Read the word aloud:</p>
+
         <div className="text-5xl font-extrabold text-yellow-700 mb-6 tracking-wider">
-          {word || '...'}
+          {word || "..."}
         </div>
 
+        {/* 🎤 Start Speaking */}
         <button
           onClick={handleSpeech}
           disabled={isListening}
           className={`px-6 py-2 rounded-full text-white font-semibold transition-all duration-200 ${
-            isListening ? 'bg-gray-400 cursor-not-allowed' : 'bg-yellow-500 hover:bg-yellow-600'
+            isListening
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-yellow-500 hover:bg-yellow-600"
           }`}
         >
-          🎤 {isListening ? 'Listening...' : 'Start Speaking'}
+          🎤 {isListening ? "Listening..." : "Start Speaking"}
         </button>
 
+        {/* ✅/❌ Result */}
         {result && (
           <p
             className={`mt-4 text-lg font-medium ${
-              result.includes('✅')
-                ? 'text-green-600'
-                : result.includes('❌')
-                ? 'text-red-600'
-                : 'text-yellow-600'
+              result.includes("✅")
+                ? "text-green-600"
+                : result.includes("❌")
+                ? "text-red-600"
+                : "text-yellow-600"
             }`}
           >
             {result}
           </p>
         )}
 
+        {/* 🔁 New Word */}
         <button
           onClick={fetchWord}
           className="mt-4 bg-yellow-700 hover:bg-yellow-800 text-white px-4 py-2 rounded-full transition-all"
@@ -155,6 +143,7 @@ const ReadingLevel2 = () => {
           🔁 New Word
         </button>
 
+        {/* 🔊 Listen to Word */}
         <button
           onClick={handleTextToSpeech}
           className="mt-4 bg-yellow-700 hover:bg-yellow-800 text-white px-4 py-2 rounded-full transition-all"
@@ -166,4 +155,4 @@ const ReadingLevel2 = () => {
   );
 };
 
-export default ReadingLevel2;
+export default ReadingLevel3;

@@ -42,14 +42,14 @@ def get_random_word_6to8letter():
             else:
                 continue
 
-def get_random_word_9letter():
+def get_random_word_5moreletter():
     with open(CSV_PATH, 'r') as file:
         reader = csv.reader(file)
         word_list = [row[0] for row in reader if row]  # Assuming each row has one word
         x = 0
         while(x==0):
             wrd = random.choice(word_list)
-            if len(wrd) > 8:
+            if len(wrd) > 5:
                 x=1
                 return wrd
             else:
