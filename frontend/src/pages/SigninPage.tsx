@@ -14,30 +14,35 @@ const Signin = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const response = await fetch("http://localhost:3000/signin", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username: formData.email,
-          password: formData.password,
-        }),
-      });
-  
-      if (response.ok) {
-        alert("Signed in successfully!");
-        navigate("/main");
-      } else {
-        const errorText = await response.text();
-        alert(errorText);
-      }
-    } catch (err) {
-      console.error("Login failed:", err);
-      alert("Something went wrong");
+  e.preventDefault();
+  try {
+    const response = await fetch("http://localhost:3000/signin", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        username: formData.email,
+        password: formData.password,
+      }),
+    });
+
+    if (response.ok) {
+      const data = await response.json(); // 👈 get JSON response (with token)
+
+      // ✅ Save token in localStorage
+      localStorage.setItem("token", data.token);
+
+      alert("Signed in successfully!");
+      navigate("/main");
+    } else {
+      const errorText = await response.text();
+      alert(errorText);
     }
-  };
-  
+  } catch (err) {
+    console.error("Login failed:", err);
+    alert("Something went wrong");
+  }
+};
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-purple-100 dark:bg-gray-900 p-6">
