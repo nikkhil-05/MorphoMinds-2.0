@@ -1,36 +1,36 @@
 import React from 'react';
 import { Link, useParams } from 'react-router-dom';
-import MovingBubbles from "@/components/MovingBubbles"; // ✅ import it
+import MovingBubbles from "@/components/MovingBubbles";
 
-const capitalize = (s: string) => {
-    if (!s) return "";
-    return s.charAt(0).toUpperCase() + s.slice(1);
-}
+// Capitalize first letter
+const capitalize = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1) : "";
+
+// Import level data from each subject folder
+import englishLevels from '../readingEnglish/index';
+import hindiLevels from '../readingHindi/index';
+
+
+// Map subjects to their levels
+const subjectLevelsMap: Record<string, { level: number; title: string; description: string; link: string }[]> = {
+    english: englishLevels,
+    hindi: hindiLevels,
+};
 
 const ReadingLevels: React.FC = () => {
     const { subject } = useParams<{ subject: string }>();
 
-    if (!subject) {
-        return <div>Subject not found. Please go back and select a subject.</div>;
-    }
-    
-    const englishLevels = [
-        { level: 1, title: "Learn the Alphabet", description: "Listen to the sounds of each letter.", link: `/readingEnglish/level1` },
-        { level: 2, title: "Alphabet Quiz", description: "Test your knowledge of letter sounds.", link: `/readingEnglish/level2` },
-        { level: 3, title: "Word Builder", description: "In this level, learners will practice reading simple words made up of 3 to 5 letters.", link: `/readingEnglish/level3` },
-        { level: 4, title: "Longer Words", description: "In this level, learners will practice reading simple words made 5 or more letters", link: `/readingEnglish/level4` },
-        { level: 5, title: "Simple Sentences",  description: "Learn to read and understand short sentences made from familiar words.", link: `/readingEnglish/level5` }
+    if (!subject) return <div>Subject not found.</div>;
 
-    ];
+    const levelsToShow = subjectLevelsMap[subject.toLowerCase()];
 
-    const levelsToShow = subject.toLowerCase() === 'english' ? englishLevels : [];
+    if (!levelsToShow) return <div>No data found for {subject}.</div>;
 
     return (
         <div className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
-            {/* ✅ Background Bubbles */}
+            {/* Background Bubbles */}
             <MovingBubbles />
 
-            {/* ✅ Foreground content */}
+            {/* Foreground content */}
             <div className="relative z-10 p-6">
                 <h1 className="text-4xl font-bold mb-8 text-center">
                     {capitalize(subject)} Reading Levels

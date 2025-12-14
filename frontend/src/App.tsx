@@ -17,31 +17,27 @@ import SettingsPage from "./components/settings/page";
 import WritingLevels from "./components/writingLevels/page";
 import ReadingLevels from "./components/readingLevels/page";
 
-// English Writing
+// Writing Levels
 import WritingEnglishLevel1 from "./components/writingEnglish/level1";
 import WritingEnglishLevel2 from "./components/writingEnglish/level2";
 
-
-//English Reading
-import ReadingEnglishLevel1 from "./components/readingEnglish/level1";
-import ReadingEnglishLevel2 from "./components/readingEnglish/level2";
-import ReadingEnglishLevel3 from "./components/readingEnglish/level3";
-import ReadingEnglishLevel4 from "./components/readingEnglish/level4"; 
-import ReadingEnglishLevel5 from './components/readingEnglish/level5';
-
-// Hindi Writing
 import WritingHindiLevel1 from "./components/writingHindi/level1";
 import WritingHindiLevel2 from "./components/writingHindi/level2";
 
-// Hindi Reading
-import ReadingHindiLevel1 from "./components/readingHindi/level1";
-import ReadingHindiLevel2 from "./components/readingHindi/level2";
-
-// Math Writing
 import WritingMathLevel1 from "./components/writingMath/level1";
 import WritingMathLevel2 from "./components/writingMath/level2";
 
-// Math Writing
+// Reading Levels (English/Hindi/Math)
+import ReadingEnglishLevel1 from "./components/readingEnglish/level1";
+import ReadingEnglishLevel2 from "./components/readingEnglish/level2";
+import ReadingEnglishLevel3 from "./components/readingEnglish/level3";
+import ReadingEnglishLevel4 from "./components/readingEnglish/level4";
+import ReadingEnglishLevel5 from "./components/readingEnglish/level5";
+
+import ReadingHindiLevel1 from "./components/readingHindi/level1";
+import ReadingHindiLevel2 from "./components/readingHindi/level2";
+import ReadingHindiLevel3 from "./components/readingHindi/level3";
+
 import ReadingMathLevel1 from "./components/readingMath/level1";
 import ReadingMathLevel2 from "./components/readingMath/level2";
 
@@ -55,15 +51,16 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Home/>}/>
-            <Route path="/signin" element={<Signin/>}/>
-            <Route path="/signup" element={<Signup/>}/>
+            {/* Main Pages */}
+            <Route path="/" element={<Home />} />
+            <Route path="/signin" element={<Signin />} />
+            <Route path="/signup" element={<Signup />} />
             <Route path="/main" element={<Index />} />
             <Route path="/faqs" element={<FAQsPage />} />
             <Route path="/support" element={<SupportPage />} />
             <Route path="/settings" element={<SettingsPage />} />
 
-            {/* Dynamic Writing/Reading Subjects */}
+            {/* Dynamic Subject Pages */}
             <Route path="/writing/:subject" element={<WritingLevels />} />
             <Route path="/reading/:subject" element={<ReadingLevels />} />
 
@@ -77,19 +74,21 @@ const App = () => (
             <Route path="/writingMath/level1" element={<WritingMathLevel1 />} />
             <Route path="/writingMath/level2" element={<WritingMathLevel2 />} />
 
-            {/* reading Levels */}
-            <Route path="/readingEnglish/level1" element={<ReadingEnglishLevel1 />} />
-            <Route path="/readingEnglish/level2" element={<ReadingEnglishLevel2 />} />
-            <Route path="/readingEnglish/level3" element={<ReadingEnglishLevel3 />} />
-            <Route path="/readingEnglish/level4" element={<ReadingEnglishLevel4 />} /> 
-            <Route path="/readingEnglish/level5" element={<ReadingEnglishLevel5 />} /> 
+            {/* Reading Levels */}
+            <Route path="/reading/english/level1" element={<ReadingEnglishLevel1 />} />
+            <Route path="/reading/english/level2" element={<ReadingEnglishLevel2 />} />
+            <Route path="/reading/english/level3" element={<ReadingEnglishLevel3 />} />
+            <Route path="/reading/english/level4" element={<ReadingEnglishLevel4 />} />
+            <Route path="/reading/english/level5" element={<ReadingEnglishLevel5 />} />
 
-            <Route path="/readingHindi/level1" element={<ReadingHindiLevel1 />} />
-            <Route path="/readingHindi/level2" element={<ReadingHindiLevel2 />} />
+            <Route path="/reading/hindi/level1" element={<ReadingHindiLevel1 />} />
+            <Route path="/reading/hindi/level2" element={<ReadingHindiLevel2 />} />
+            <Route path="/reading/hindi/level3" element={<ReadingHindiLevel3 />} />
 
-            <Route path="/readingMath/level1" element={<ReadingMathLevel1 />} />
-            <Route path="/readingMath/level2" element={<ReadingMathLevel2 />} />
+            <Route path="/reading/maths/level1" element={<ReadingMathLevel1 />} />
+            <Route path="/reading/maths/level2" element={<ReadingMathLevel2 />} />
 
+            {/* Catch-all */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
